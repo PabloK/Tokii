@@ -2,26 +2,29 @@ require "rubygems"
 require "rubygame"
 require "./models/gameobject"
 require "./models/background"
+require "./models/bound"
+require "./models/collisionsupervisor"
+require "./models/ball"
 
-#
-# Class that handels a Tokii game
-#
 class Game
   def initialize
-    @queue = Rubygame::EventQueue.new
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 40
-
+    @clock.target_framerate = 60
+    @queue = Rubygame::EventQueue.new
     @screen = Rubygame::Screen.new [800,600], 0,
                                    [Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @screen.title = "Tokii"
     @background = Background.new @screen.width, @screen.height
 
+    @moving = []
+    @moving << (Ball.new 400, 300, 5)
+    @stale = []
+    @stale << (Bound.new 0, 0,@screen.width,5)
+    @stale << (Bound.new 0, 595,@screen.width,5)
+    @collisiondetector = CollisionSupervisor.new @moving, @stale
+
   end
- 
-  #
-  # The game loop
-  # 
+
   def run!
     loop do 
       update
@@ -30,11 +33,13 @@ class Game
     end
   end
 
-  #
-  # Updates game logic depending input
-  #
   def update
-    @background.update if @clock.lifetime.even?
+    
+    @collisiondetector.collide!
+    for object in @moving do
+      object.move!
+    end
+
     @queue.each do |event|
       case event 
         when Rubygame::QuitEvent
@@ -44,16 +49,14 @@ class Game
     end
   end
   
-  #
-  # Draws game board
-  #
   def draw
-    @screen.fill [0,0,0]
     @background.draw @screen
+    for object in @stale + @moving do
+      object.draw @screen
+    end
     @screen.flip
   end 
 
 end
-
 g = Game.new
 g.run!

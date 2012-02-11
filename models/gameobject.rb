@@ -1,7 +1,7 @@
 class GameObject
   
   attr_reader :x , :y, :surface
-
+  
   def initialize x, y , surface
    @x = x 
    @y = y

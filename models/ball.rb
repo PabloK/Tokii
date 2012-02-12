@@ -1,20 +1,21 @@
 class Ball < GameObject
-
+  
+  attr_reader :radii
   def initialize x, y, radii
     @bg_color = [250,250,250]
     
-    height = width = radii * 2 + 2
+    height = width = radii * 2 + 1
     @center = [radii, radii]
 
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @bg_color
 
     @radii = radii
-    @x = x - radii - 2
-    @y = y - radii - 2
-    @xspeed = 0.0
-    @yspeed = 1.0
-    @speed = 2
+    @x = x - radii 
+    @y = y - radii 
+    @xspeed = 0
+    @yspeed = 1
+    @speed = 1
 
   end
 
@@ -23,24 +24,12 @@ class Ball < GameObject
     @y = @y + @yspeed * @speed 
   end
   
-  def move?
-    [@x + @xspeed,
-     @y + @yspeed]
-  end
-
-  def bounce!
-    @x = -@x
+  def bounce! target
+    @yspeed = -@yspeed
   end
 
   def draw screen
-    puts(@x)
     @surface.blit screen, [@x, @y]
-  end
-
-  def scollide? target
-    if target.inbounds? move?
-      bounce!
-    end
   end
 
 end

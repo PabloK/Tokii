@@ -11,16 +11,15 @@ class Game
     @clock = Rubygame::Clock.new
     @clock.target_framerate = 60
     @queue = Rubygame::EventQueue.new
-    @screen = Rubygame::Screen.new [800,600], 0,
+    @screen = Rubygame::Screen.new [800,800], 0,
                                    [Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @screen.title = "Tokii"
     @background = Background.new @screen.width, @screen.height
 
     @moving = []
-    @moving << (Ball.new 400, 300, 5)
+    @moving << (Ball.new 75, 75, 5)
     @stale = []
-    @stale << (Bound.new 0, 0,@screen.width,5)
-    @stale << (Bound.new 0, 595,@screen.width,5)
+    @stale << (Bound.new @screen.width/2, 0, @screen.width, 10)
     @collisiondetector = CollisionSupervisor.new @moving, @stale
 
   end

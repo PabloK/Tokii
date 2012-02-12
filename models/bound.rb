@@ -1,21 +1,19 @@
 class Bound < GameObject
-  def initialize x, y, width, height
-    @bg_color = [250,250,250]
-    
+  
+  attr_reader :x,:y,:width,:height
+  
+  def initialize x, y, width, height, rotation=0
     @height = height
     @width = width
     @surface = Rubygame::Surface.new [width, height]
     @surface.fill [255,255,255]
     @x = x
     @y = y
-    super @x, @y, surface
-
+    @rotation = rotation
   end
   
-  def inbounds? in_xy
-    in_x = in_xy[0]
-    in_y = in_xy[1]
-    return true
+  def draw screen
+    temp = @surface.rotozoom(@rotation,1,true)
+    temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
   end
-
 end

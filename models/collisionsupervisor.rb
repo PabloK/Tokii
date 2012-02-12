@@ -8,7 +8,6 @@ class CollisionSupervisor
   def collide!
     for object in @moving_objects do
       for stale in @stale_objects do
-        object.scollide? stale
       end
     end
   end

@@ -1,7 +1,7 @@
 class Ball < GameObject
   
   attr_reader :radii
-  def initialize x, y, radii
+  def initialize x, y, radii, xspeed=1, yspeed=1
     @bg_color = [250,250,250]
     
     height = width = radii * 2 + 1
@@ -13,9 +13,10 @@ class Ball < GameObject
     @radii = radii
     @x = x - radii 
     @y = y - radii 
-    @xspeed = 0
-    @yspeed = 1
-    @speed = 1
+    @xspeed = xspeed
+    @yspeed = yspeed
+    @speed = 2
+    @bounce_timer = 0
 
   end
 
@@ -25,7 +26,11 @@ class Ball < GameObject
   end
   
   def bounce! target
-    @yspeed = -@yspeed
+    if @bounce_timer == 0
+      puts "bounce"
+      @bounce_timer = @speed*2
+    end
+    @bounce_timer -= 1 if @bounce_timer >= 1
   end
 
   def draw screen

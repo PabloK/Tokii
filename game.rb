@@ -1,3 +1,4 @@
+#encoding utf-8
 require "rubygems"
 require './models/utils'
 require "rubygame"
@@ -10,22 +11,36 @@ require "./models/ball"
 class Game
   include Math
   def initialize
+
+    Ball.toggle_show_box
+
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 55
+    @clock.target_framerate = 40
+
     @queue = Rubygame::EventQueue.new
-    @screen = Rubygame::Screen.new [1000,1000], 0,
+    @screen = Rubygame::Screen.new [800,800], 0,
                                    [Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @screen.title = "Tokii"
     @background = Background.new @screen.width, @screen.height
 
     @balls = []
     @blocks = []
-
-    50.times { @balls << (Ball.new 500, 500, 4,rand(100)-50,rand(100)-50) }
+    15.times { @balls << (Ball.new 500, 500, 4,rand(100)-50,rand(100)-50) }
 
     for n in 1..6 do
       @blocks << (Block.new (@screen.width/3)*sin(2*PI*n/6)+@screen.width/2,(@screen.width/3)*cos(2*PI*n/6)+@screen.width/2, @screen.width/2.525, 20, 60*(n-1) + 60)
     end
+
+    for row in 1..6 do
+      for m in 1..8 do
+        next if m == 1 and (row == 1 or row == 6)
+        next if m == 8 and (row == 1 or row == 6)
+        for n in 1..6 do
+        @blocks << (Block.new (40/3)*sin(2*PI*n/6)+210 + 42 *m,(40/3)*cos(2*PI*n/6)+260+42*row, 40/2.525, 4, 60*(n-1) + 60,[rand(255),rand(255),rand(255)])
+        end
+      end
+    end
+
     @gameobjects = @balls + @blocks
     @collisiondetector = CollisionSupervisor.new @balls, @blocks
   end
@@ -38,6 +53,7 @@ class Game
       draw
       @clock.tick
       exit if @clock.ticks > 500
+      puts @clock.framerate
     end
   end
 

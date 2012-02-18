@@ -6,7 +6,11 @@ class CollisionSupervisor
   end
   
   def ball_block_collision ball, block
-    return false
+    #find block sides equations
+    #solve the equation
+    #if the equation has solutions
+      #calculate the side normal
+      #calculate
   end
   
   def box_overlap box1, box2

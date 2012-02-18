@@ -11,7 +11,7 @@ class Game
   include Math
   def initialize
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 70
+    @clock.target_framerate = 55
     @queue = Rubygame::EventQueue.new
     @screen = Rubygame::Screen.new [1000,1000], 0,
                                    [Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
@@ -21,14 +21,12 @@ class Game
     @balls = []
     @blocks = []
 
-    @balls << (Ball.new 500, 500, 4,0)
-    @balls << (Ball.new 500, 500, 4,0,1)
-    @balls << (Ball.new 500, 500, 4,-1)
+    50.times { @balls << (Ball.new 500, 500, 4,rand(100)-50,rand(100)-50) }
 
     for n in 1..6 do
       @blocks << (Block.new (@screen.width/3)*sin(2*PI*n/6)+@screen.width/2,(@screen.width/3)*cos(2*PI*n/6)+@screen.width/2, @screen.width/2.525, 20, 60*(n-1) + 60)
     end
-
+    @gameobjects = @balls + @blocks
     @collisiondetector = CollisionSupervisor.new @balls, @blocks
   end
 
@@ -39,7 +37,7 @@ class Game
       update
       draw
       @clock.tick
-      exit if @clock.ticks > 200
+      exit if @clock.ticks > 500
     end
   end
 
@@ -65,7 +63,7 @@ class Game
   # 
   def draw
     @background.draw @screen
-    for object in @balls + @blocks do
+    for object in @gameobjects do
       object.draw @screen
     end
     @screen.flip

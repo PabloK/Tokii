@@ -15,23 +15,26 @@ class CollisionSupervisor
   
   def box_overlap box1, box2
     box2.each_value do |v|
-      if v[0] < box1[:topright][0] and v[0] > box1[:topleft][0] and (v[1] < box1[:bottomleft][1] and v[1] > box1[:topleft][1])
-          return true
-        end
+      return true if v[0] < box1[:tr][0] and v[0] > box1[:tl][0] and (v[1] < box1[:bl][1] and v[1] > box1[:tl][1])
     end
     return false
   end
   
   def collide!
     for ball in @balls do
-      # ball on pad
-      
-      # ball on block
+      bounced = false
+
       for block in @blocks do
         if box_overlap block.boundbox, ball.boundbox
-          ball.bounce! block if ball_block_collision ball, block
+          if ball_block_collision ball, block
+            ball.bounce! block
+            bounced = true
+            exit
+          end
         end
       end
+      
+      ball.move! unless bounced
       # ball on ball on ball
     end
   end

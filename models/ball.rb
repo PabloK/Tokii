@@ -14,22 +14,31 @@ class Ball < GameObject
     @xspeed = xspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @speed = 2
+
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @bg_color
-    @boundbox = {:topleft  => [@x - @radii - 1, @y - @radii - 1],
-            :topright => [@x + @radii + 1, @y - @radii - 1],
-            :bottomleft  => [@x - @radii - 1, @y + @radii + 1],
-            :bottomright => [@x + @radii + 1,@y + @radii + 1]}
+    @boundbox = {:tl => [@x - @radii - 1, @y - @radii - 1],
+                 :tr => [@x + @radii + 1, @y - @radii - 1],
+                 :bl => [@x - @radii - 1, @y + @radii + 1],
+                 :br => [@x + @radii + 1, @y + @radii + 1]}
   end
 
   def move!
-    @x = @x + @xspeed * @speed 
-    @y = @y + @yspeed * @speed 
+    movementx = @xspeed * @speed
+    movementy = @yspeed * @speed
 
-    @boundbox = {:topleft  => [@x - @radii, @y - @radii],
-            :topright => [@x + @radii, @y - @radii],
-            :bottomleft  => [@x - @radii, @y + @radii ],
-            :bottomright => [@x + @radii ,@y + @radii]}
+    @x += movementx 
+    @y += movementy
+    
+    @boundbox[:tl][0] += movementx
+    @boundbox[:tr][0] += movementx
+    @boundbox[:bl][0] += movementx
+    @boundbox[:br][0] += movementx
+    @boundbox[:tl][1] += movementy
+    @boundbox[:tr][1] += movementy
+    @boundbox[:bl][1] += movementy
+    @boundbox[:br][1] += movementy
+
   end
   
   def bounce! target
@@ -41,10 +50,10 @@ class Ball < GameObject
     @surface.blit screen, [@x-@radii, @y-@radii]
 
     if @@show_box 
-      screen.draw_line boundbox[:topleft], boundbox[:topright], [255,0,0]
-      screen.draw_line boundbox[:topleft], boundbox[:bottomleft], [255,0,0]
-      screen.draw_line boundbox[:bottomleft], boundbox[:bottomright], [255,0,0]
-      screen.draw_line boundbox[:bottomright], boundbox[:topright], [255,0,0]
+      screen.draw_line boundbox[:tl], boundbox[:tr], [255,0,0]
+      screen.draw_line boundbox[:tr], boundbox[:bl], [255,0,0]
+      screen.draw_line boundbox[:bl], boundbox[:br], [255,0,0]
+      screen.draw_line boundbox[:br], boundbox[:tr], [255,0,0]
       screen.draw_line [@x,@y], [@x + @xspeed * 10 * @speed,@y+ @yspeed * 10 * @speed],[255,255,0]
     end
   end

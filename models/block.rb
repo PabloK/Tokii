@@ -17,10 +17,11 @@ class Block < GameObject
     @color = color
     @surface = Rubygame::Surface.new [width, height]
     @surface.fill @color
-    @boundbox = {:topleft  => [@x -@halfw -@halfh, @y -@halfw -@halfh],
-            :topright => [@x +@halfw+@halfh,@y -@halfw -@halfh],
-            :bottomleft  => [@x -@halfw -@halfh, @y +@halfw +@halfh],
-            :bottomright => [@x +@halfw+@halfh,@y +@halfw +@halfh]}
+    @minbox = sqrt(@halfw**2 + @halfh**2)+0.1
+    @boundbox = {:tl => [ @x - @minbox , @y - @minbox ],
+                 :tr => [ @x + @minbox , @y - @minbox ],
+                 :bl => [ @x - @minbox , @y + @minbox],
+                 :br => [ @x + @minbox , @y + @minbox ]}
   end
   
   def draw screen
@@ -29,10 +30,10 @@ class Block < GameObject
     temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
 
     if @@show_box 
-      screen.draw_line boundbox[:topleft], boundbox[:topright], [255,0,0]
-      screen.draw_line boundbox[:topleft], boundbox[:bottomleft], [255,0,0]
-      screen.draw_line boundbox[:bottomleft], boundbox[:bottomright], [255,0,0]
-      screen.draw_line boundbox[:bottomright], boundbox[:topright], [255,0,0]
+      screen.draw_line boundbox[:tl], boundbox[:tr], [255,0,0]
+      screen.draw_line boundbox[:tl], boundbox[:bl], [255,0,0]
+      screen.draw_line boundbox[:bl], boundbox[:br], [255,0,0]
+      screen.draw_line boundbox[:br], boundbox[:tr], [255,0,0]
       screen.draw_line line(:midw), [@x,@y], [255,0,0]
       screen.draw_line line(:midh), [@x,@y], [255,0,0]
     end

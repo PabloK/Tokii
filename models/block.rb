@@ -4,9 +4,9 @@ class Block < GameObject
   
   @@show_box ||= false 
 
-  attr_reader :x,:y,:width,:height, :boundbox
+  attr_reader :x,:y,:width,:height, :boundbox, :rotation
   
-  def initialize x, y, width, height, rotation=0, color=[255,255,255]
+  def initialize x, y, width, height, rotation=0, color=[100,100,100]
     @height = height
     @width = width
     @x = x
@@ -30,17 +30,22 @@ class Block < GameObject
     temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
 
     if @@show_box 
-      screen.draw_line boundbox[:tl], boundbox[:tr], [255,0,0]
-      screen.draw_line boundbox[:tl], boundbox[:bl], [255,0,0]
-      screen.draw_line boundbox[:bl], boundbox[:br], [255,0,0]
-      screen.draw_line boundbox[:br], boundbox[:tr], [255,0,0]
-      screen.draw_line line(:midw), [@x,@y], [255,0,0]
-      screen.draw_line line(:midh), [@x,@y], [255,0,0]
+      screen.draw_line boundbox[:tl], boundbox[:tr], [100,0,0]
+      screen.draw_line boundbox[:tl], boundbox[:bl], [100,0,0]
+      screen.draw_line boundbox[:bl], boundbox[:br], [100,0,0]
+      screen.draw_line boundbox[:br], boundbox[:tr], [100,0,0]
+      screen.draw_line cord(:midw), [@x,@y], [255,0,0]
+      screen.draw_line cord(:midh), [@x,@y], [255,0,0]
+      screen.draw_line cord(:tl), cord(:tr), [0,255,0]
+      screen.draw_line cord(:tl), cord(:bl), [0,255,0]
+      screen.draw_line cord(:bl), cord(:br), [0,255,0]
+      screen.draw_line cord(:br), cord(:tr), [0,255,0]
     end
   end
 
 
-  def line pos 
+  
+  def cord pos 
     cosr = cos(@rotation*0.0174532925)
     sinr = sin(@rotation*0.0174532925)
     cwidth = @halfw * cosr
@@ -48,11 +53,12 @@ class Block < GameObject
     sheight = @halfh * sinr
     swidth = @halfw * sinr
 
-    midw = [@x-cwidth, @y+swidth]
-    midh = [@x-sheight, @y-cheight]
-    
-    return midw if pos == :midw
-    return midh if pos == :midh
+    return [@x-cwidth, @y+swidth] if pos == :midw
+    return [@x-sheight, @y-cheight] if pos == :midh
+    return [@x-cwidth-sheight, @y+swidth-cheight] if pos == :tl
+    return [@x+cwidth-sheight, @y-swidth-cheight] if pos == :tr
+    return [@x-cwidth+sheight, @y+swidth+cheight] if pos == :bl
+    return [@x+cwidth+sheight, @y-swidth+cheight] if pos == :br
   end
 
   def self.toggle_show_box

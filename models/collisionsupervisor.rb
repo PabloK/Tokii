@@ -6,16 +6,25 @@ class CollisionSupervisor
   end
   
   def ball_block_collision ball, block
-    #find block sides equations
-    #solve the equation
-    #if the equation has solutions
-      #calculate the side normal
-      #calculate
+    block_lines = [[:tr,:br],[:br,:bl],[:bl,:tl],[:tl,:tr]]  
+    for line in block_lines do
+      p1 = block.cord line[0]
+      p2 = block.cord line[1]
+        
+      dx  = p2[0] - p1[0]
+      dy  = p2[0] - p1[0]
+      dr = Math.sqrt(dy**2 + dx**2)
+      d   = p1[0]*p2[1]-p2[0]*p1[1]
+      disc = ball.radii**2 * dr**2 - d**2
+      return disc >= 0
+       
+    end
+    return false
   end
   
   def box_overlap box1, box2
     box2.each_value do |v|
-      return true if v[0] < box1[:tr][0] and v[0] > box1[:tl][0] and (v[1] < box1[:bl][1] and v[1] > box1[:tl][1])
+      return true if v[0] < box1[:tr][0] and v[0] > box1[:tl][0] and v[1] < box1[:bl][1] and v[1] > box1[:tl][1]
     end
     return false
   end
@@ -29,13 +38,12 @@ class CollisionSupervisor
           if ball_block_collision ball, block
             ball.bounce! block
             bounced = true
-            exit
+            ball.move!
+            next
           end
         end
       end
-      
       ball.move! unless bounced
-      # ball on ball on ball
     end
   end
   

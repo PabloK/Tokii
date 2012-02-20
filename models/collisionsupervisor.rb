@@ -10,12 +10,16 @@ class CollisionSupervisor
     for line in block_lines do
       p1 = block.cord line[0]
       p2 = block.cord line[1]
-        
+      p1[0] -= ball.x     
+      p1[1] -= ball.y
+      p2[0] -= ball.x     
+      p2[1] -= ball.y     
+   
       dx  = p2[0] - p1[0]
       dy  = p2[0] - p1[0]
-      dr = Math.sqrt(dy**2 + dx**2)
+      dr = dy**2 + dx**2
       d   = p1[0]*p2[1]-p2[0]*p1[1]
-      disc = ball.radii**2 * dr**2 - d**2
+      disc = ball.radii**2 * dr - d**2
       return disc >= 0
        
     end

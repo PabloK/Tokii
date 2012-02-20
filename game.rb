@@ -29,12 +29,13 @@ class Game
     @scenery = []
 
     for n in 1..6 do
-      scenery = (Block.new (@screen.width/3)*sin(2*PI*n/6)+@screen.width/2,(@screen.width/3)*cos(2*PI*n/6)+@screen.width/2, @screen.width/2.525, 20, 60*(n-1) + 60)
-      scenery.draw @background.surface
-      #@scenery << scenery
+      @blocks << (Block.new (@screen.width/3)*sin(2*PI*n/6)+@screen.width/2,(@screen.width/3)*cos(2*PI*n/6)+@screen.width/2, @screen.width/2.525, 20, 60*(n-1) + 60)
     end
 
-    20.times { @balls << (Ball.new 230, 230, 4,rand(20),rand(20)) }
+    @balls << (Ball.new 230, 230, 3,-20,-20) 
+    @balls << (Ball.new 230, 530, 3,20,20) 
+    @balls << (Ball.new 530, 230, 3,-20,20) 
+    @balls << (Ball.new 530, 530, 3,20,-20) 
     
     colors = [[170,150,30],[170,30,30],[170,30,150],[30,190,30],[30,150,170],[30,30,170]]
 
@@ -48,7 +49,7 @@ class Game
       end
     end
 
-    @collisiondetector = CollisionSupervisor.new @balls, @blocks + @scenery
+    @collisiondetector = CollisionSupervisor.new @balls, @blocks
   end
 
   def run!
@@ -56,7 +57,7 @@ class Game
       update
       draw
       @clock.tick
-      exit if @clock.ticks > 100
+      exit if @clock.ticks > 300
     end
   end
 

@@ -13,14 +13,12 @@ class Ball < GameObject
     @y = y + radii 
     @xspeed = xspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
-    @speed = 2
+    @speed = 1
 
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @bg_color
-    @boundbox = {:tl => [@x - @radii - 1, @y - @radii - 1],
-                 :tr => [@x + @radii + 1, @y - @radii - 1],
-                 :bl => [@x - @radii - 1, @y + @radii + 1],
-                 :br => [@x + @radii + 1, @y + @radii + 1]}
+    @boundbox = {:x => @x,:y => @y,:width => @radii*2+1}
+
   end
 
   def move!
@@ -30,14 +28,7 @@ class Ball < GameObject
     @x += movementx 
     @y += movementy
     
-    @boundbox[:tl][0] += movementx
-    @boundbox[:tr][0] += movementx
-    @boundbox[:bl][0] += movementx
-    @boundbox[:br][0] += movementx
-    @boundbox[:tl][1] += movementy
-    @boundbox[:tr][1] += movementy
-    @boundbox[:bl][1] += movementy
-    @boundbox[:br][1] += movementy
+    @boundbox = {:x => @x,:y => @y,:width => @radii*2,:height => @radii*2}
 
   end
   
@@ -48,14 +39,6 @@ class Ball < GameObject
 
   def draw screen
     @surface.blit screen, [@x-@radii, @y-@radii]
-
-    if @@show_box 
-      screen.draw_line boundbox[:tl], boundbox[:tr], [255,0,0]
-      screen.draw_line boundbox[:tr], boundbox[:bl], [255,0,0]
-      screen.draw_line boundbox[:bl], boundbox[:br], [255,0,0]
-      screen.draw_line boundbox[:br], boundbox[:tr], [255,0,0]
-      screen.draw_line [@x,@y], [@x + @xspeed * 10 * @speed,@y+ @yspeed * 10 * @speed],[255,255,0]
-    end
   end
 
   def self.toggle_show_box

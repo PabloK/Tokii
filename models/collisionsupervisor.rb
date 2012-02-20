@@ -27,9 +27,7 @@ class CollisionSupervisor
   end
   
   def box_overlap box1, box2
-    box2.each_value do |v|
-      return true if v[0] < box1[:tr][0] and v[0] > box1[:tl][0] and v[1] < box1[:bl][1] and v[1] > box1[:tl][1]
-    end
+    return box1[:width] + box2[:width] >= (box1[:x] - box2[:x]).abs if box1[:width] + box2[:width] >= (box1[:y] - box2[:y]).abs
     return false
   end
   
@@ -43,6 +41,7 @@ class CollisionSupervisor
             ball.bounce! block
             bounced = true
             ball.move!
+            block.color = [255,0,0]
             next
           end
         end

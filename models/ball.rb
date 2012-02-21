@@ -17,7 +17,7 @@ class Ball < GameObject
 
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @bg_color
-    @boundbox = {:x => @x,:y => @y,:width => @radii*2+1}
+    @boundbox = {:x => @x,:y => @y,:width => @radii+1}
 
   end
 
@@ -28,7 +28,8 @@ class Ball < GameObject
     @x += movementx 
     @y += movementy
     
-    @boundbox = {:x => @x,:y => @y,:width => @radii*2,:height => @radii*2}
+    @boundbox[:x] = @x
+    @boundbox[:y] = @y
 
   end
   

@@ -1,26 +1,41 @@
 class CollisionSupervisor
   
-  def initialize balls, blocks
+  def initialize balls, blocks, screen
     @balls = balls
     @blocks = blocks 
+    @screen = screen
   end
   
   def ball_block_collision ball, block
-    block_lines = [[:tr,:br],[:br,:bl],[:bl,:tl],[:tl,:tr]]  
+    block_lines = []
+    block_lines << [:tr,:tl]
+    block_lines << [:br,:bl]
+    block_lines << [:tr,:br]
+    block_lines << [:tl,:bl]
+
     for line in block_lines do
+
       p1 = block.cord line[0]
       p2 = block.cord line[1]
-      p1[0] -= ball.x     
+      
+      p1[0] -= ball.x
       p1[1] -= ball.y
-      p2[0] -= ball.x     
-      p2[1] -= ball.y     
+      p2[0] -= ball.x
+      p2[1] -= ball.y
    
-      dx  = p2[0] - p1[0]
-      dy  = p2[0] - p1[0]
+      dx  = p1[0] - p2[0]
+      dy  = p1[1] - p2[1]
       dr = dy**2 + dx**2
       d   = p1[0]*p2[1]-p2[0]*p1[1]
       disc = ball.radii**2 * dr - d**2
-      return disc >= 0
+
+      if disc >= 0 
+        return false if  0 > p1[0] and ball.radii > p2[0] 
+        return false if  0 < p1[0] and ball.radii < p2[0] 
+        return false if  0 < p1[1] and ball.radii < p2[1] 
+        return false if  0 > p1[1] and ball.radii > p2[1] 
+        return true
+      end
        
     end
     return false
@@ -41,7 +56,7 @@ class CollisionSupervisor
             ball.bounce! block
             bounced = true
             ball.move!
-            block.color = [255,0,0]
+            block.color = [rand(255),rand(255),rand(255)]
             next
           end
         end

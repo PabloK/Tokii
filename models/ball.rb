@@ -13,7 +13,7 @@ class Ball < GameObject
     @y = y + radii 
     @xspeed = xspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
-    @speed = 1
+    @speed = rand(4)
 
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @bg_color

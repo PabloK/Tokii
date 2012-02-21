@@ -33,12 +33,7 @@ class Block < GameObject
     temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
 
     if @@show_box 
-      screen.draw_line cord(:midw), [@x,@y], [255,0,0]
-      screen.draw_line cord(:midh), [@x,@y], [255,0,0]
       screen.draw_line cord(:tl), cord(:tr), [0,255,0]
-      screen.draw_line cord(:tl), cord(:bl), [0,255,0]
-      screen.draw_line cord(:bl), cord(:br), [0,255,0]
-      screen.draw_line cord(:br), cord(:tr), [0,255,0]
     end
   end
 

@@ -18,7 +18,7 @@ class Block < GameObject
     @surface = Rubygame::Surface.new [width, height]
     @surface.fill @color
     @minbox = sqrt(@halfw**2 + @halfh**2)+0.1
-    @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)+1}
+    @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+1}
 
   end
   

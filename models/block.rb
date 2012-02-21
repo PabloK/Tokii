@@ -32,9 +32,6 @@ class Block < GameObject
     temp = @surface.rotozoom(@rotation,1,false)
     temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
 
-    if @@show_box 
-      screen.draw_line cord(:tl), cord(:tr), [0,255,0]
-    end
   end
 
 

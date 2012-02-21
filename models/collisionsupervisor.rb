@@ -30,10 +30,10 @@ class CollisionSupervisor
       disc = ball.radii**2 * dr - d**2
 
       if disc >= 0 
-        return false if  0 > p1[0] and ball.radii > p2[0] 
-        return false if  0 < p1[0] and ball.radii < p2[0] 
-        return false if  0 < p1[1] and ball.radii < p2[1] 
-        return false if  0 > p1[1] and ball.radii > p2[1] 
+        return false if  -ball.radii > [p1[0],p2[0]].min and ball.radii > [p1[0],p2[0]].max
+        return false if  -ball.radii < [p1[0],p2[0]].min and ball.radii < [p1[0],p2[0]].max
+        return false if  -ball.radii > [p1[1],p2[1]].min and ball.radii > [p1[1],p2[1]].max
+        return false if  -ball.radii < [p1[1],p2[1]].min and ball.radii < [p1[1],p2[1]].max
         return true
       end
        

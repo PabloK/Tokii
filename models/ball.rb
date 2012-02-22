@@ -42,8 +42,4 @@ class Ball < GameObject
     @surface.blit screen, [@x-@radii, @y-@radii]
   end
 
-  def self.toggle_show_box
-    @@show_box = !@@show_box
-  end
-
 end

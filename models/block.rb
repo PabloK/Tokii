@@ -7,6 +7,7 @@ class Block < GameObject
   attr_reader :x,:y,:width,:height, :boundbox, :rotation
   
   def initialize x, y, width, height, rotation=0, color=[100,100,100]
+
     @height = height
     @width = width
     @x = x
@@ -33,8 +34,6 @@ class Block < GameObject
     temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
 
   end
-
-
   
   def cord pos 
     cosr = cos(@rotation*0.0174532925)
@@ -50,10 +49,7 @@ class Block < GameObject
     return [@x+cwidth-sheight, @y-swidth-cheight] if pos == :tr
     return [@x-cwidth+sheight, @y+swidth+cheight] if pos == :bl
     return [@x+cwidth+sheight, @y-swidth+cheight] if pos == :br
-  end
 
-  def self.toggle_show_box
-    @@show_box = !@@show_box or True
   end
   
 end

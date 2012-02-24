@@ -7,17 +7,19 @@ class CollisionSupervisor
   end
   
   def ball_block_collision ball, block
-    block_lines = []
-    block_lines << [:tr,:tl]
-    block_lines << [:br,:bl]
-    block_lines << [:tr,:br]
-    block_lines << [:tl,:bl]
+    block_side = [[:tr,:tl],[:br,:bl],[:tr,:br],[:tl,:bl]]
 
-    for line in block_lines do
+    for line in block_side do
 
       p1 = block.cord line[0]
       p2 = block.cord line[1]
       
+      # Corner bounce
+      return [p1,p2] if (ball.x - p1[0]).abs < ball.radii and (ball.y - p1[1]).abs < ball.radii 
+      return [p1,p2] if (ball.x - p2[0]).abs < ball.radii and (ball.y - p2[1]).abs < ball.radii
+
+
+      # Is ball intersecting the line between p1 and p2?
       p1[0] -= ball.x
       p1[1] -= ball.y
       p2[0] -= ball.x
@@ -30,14 +32,18 @@ class CollisionSupervisor
       disc = ball.radii**2 * dr - d**2
 
       if disc >= 0 
-        return false if  -ball.radii > [p1[0],p2[0]].min and ball.radii > [p1[0],p2[0]].max
-        return false if  -ball.radii < [p1[0],p2[0]].min and ball.radii < [p1[0],p2[0]].max
-        return false if  -ball.radii > [p1[1],p2[1]].min and ball.radii > [p1[1],p2[1]].max
-        return false if  -ball.radii < [p1[1],p2[1]].min and ball.radii < [p1[1],p2[1]].max
-        return true
+        # if it is, is it between the points?
+        pmax = [[p1[0],p2[0]].max,[p1[1],p2[1]].max]
+        pmin = [[p1[0],p2[0]].min,[p1[1],p2[1]].min]
+        return false if -ball.radii > pmin[0] and ball.radii > pmax[0]
+        return false if -ball.radii < pmin[0] and ball.radii < pmax[0]
+        return false if -ball.radii > pmin[1] and ball.radii > pmax[1]
+        return false if -ball.radii < pmin[1] and ball.radii < pmax[1]
+        return [p1, p2]
       end
        
     end
+
     return false
   end
   
@@ -45,23 +51,51 @@ class CollisionSupervisor
     return box1[:width] + box2[:width] >= (box1[:x] - box2[:x]).abs if box1[:width] + box2[:width] >= (box1[:y] - box2[:y]).abs
     return false
   end
+ 
+  def ball_overlap ball1, ball2
+    dx = ball1.x-ball2.x 
+    dy = ball1.y-ball2.y
+    return [[0,0][-dy,dx]] if dx**2 + dy**2 < ball1.radii+ball2.radii
+    return false
+  end 
   
+  def ball_blocks_collider! ball
+    for block in @blocks do
+      next unless box_overlap block.boundbox, ball.boundbox
+      bounce_line = ball_block_collision ball, block
+      next unless bounce_line
+      unmoved = ball.unmove! # Hur långt den har flyttat
+      ball.bounce! bounce_line
+      block.color=[255,block.color[1]-rand(10),0]
+      ball_controller! ball, unmoved if unmoved > 0.5 
+    end
+  end
+
+  def ball_collider! ball
+      for ball2 in @balls do
+        next if ball.object_id == ball2.object_id
+        next unless box_overlap ball2.boundbox, ball.boundbox
+        bounce_line = [[1,2],[2,1]]
+        next unless bounce_line
+        unmoved = ball.unmove! # Hur långt den har flyttat
+        ball.bounce! bounce_line
+        ball2.bounce! bounce_line
+        ball_controller! ball, unmoved if unmoved > 0.5 
+      end
+  end
+  
+  def ball_controller! ball, unmove 
+      ball.move! unmove 
+      @limit -= 1
+      return 0 if @limit == 0
+      ball_blocks_collider! ball 
+      ball_collider! ball
+  end
+
   def collide!
     for ball in @balls do
-      bounced = false
-
-      for block in @blocks do
-        if box_overlap block.boundbox, ball.boundbox
-          if ball_block_collision ball, block
-            ball.bounce! block
-            bounced = true
-            ball.move!
-            block.color = [rand(255),rand(255),rand(255)]
-            next
-          end
-        end
-      end
-      ball.move! unless bounced
+      @limit = 4
+      ball_controller! ball, 0
     end
   end
   

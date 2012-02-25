@@ -4,23 +4,22 @@ class Ball < GameObject
 
   attr_reader :radii, :boundbox, :x, :y, :speed
   def initialize x, y, radii, xspeed=1.0, yspeed=1.0
-
-    height = width = radii * 2 + 1
-    @bg_color = [250,250,250]
-    @center = [radii, radii]
+    @color = [200,200,255]
+    @color = [255,100,100] if rand(50) == 5
     @radii = radii
+    @center = [radii, radii]
     @x = x + radii 
     @y = y + radii 
-    @oldx = @x
-    @oldy = @y
     @xspeed = xspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
-    @speed = 3
+    @oldx = @x
+    @oldy = @y
 
+    @speed = 5 + rand(5)
+    height = width = radii*2 + 1
     @surface = Rubygame::Surface.new [width, height]
-    @surface.draw_circle_s @center,radii, @bg_color
+    @surface.draw_circle_s @center,radii, @color
     @boundbox = {:x => @x,:y => @y,:width => @radii+1}
-
   end
 
   def move! motion_left=@speed

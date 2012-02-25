@@ -4,10 +4,9 @@ class Block < GameObject
   
   @@show_box ||= false 
 
-  attr_reader :x,:y,:width,:height, :boundbox, :rotation,:color
+  attr_reader :x,:y,:width,:height,:boundbox, :rotation,:color
   
-  def initialize x, y, width, height, rotation=0, color=[255,255,0]
-
+  def initialize x, y, width, height, rotation=0, color=[30,35,50]
     @height = height
     @width = width
     @x = x
@@ -20,7 +19,6 @@ class Block < GameObject
     @surface.fill @color
     @minbox = sqrt(@halfw**2 + @halfh**2)+0.1
     @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+1}
-
   end
   
   def color= color
@@ -29,10 +27,8 @@ class Block < GameObject
   end
   
   def draw screen
-    
     temp = @surface.rotozoom(@rotation,1,false)
     temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
-
   end
   
   def cord pos 

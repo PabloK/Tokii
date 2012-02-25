@@ -2,7 +2,7 @@ class Ball < GameObject
   
   @@show_box ||= false 
 
-  attr_reader :radii, :boundbox, :x, :y
+  attr_reader :radii, :boundbox, :x, :y, :speed
   def initialize x, y, radii, xspeed=1.0, yspeed=1.0
 
     height = width = radii * 2 + 1
@@ -23,18 +23,18 @@ class Ball < GameObject
 
   end
 
-  def move! used=0
+  def move! motion_left=@speed
     @oldx = @x
     @oldy = @y
-    @x += @xspeed * (@speed - used)
-    @y += @yspeed * (@speed - used)
+    @x += @xspeed * motion_left
+    @y += @yspeed * motion_left
     @boundbox[:x] = @x
     @boundbox[:y] = @y
   end
 
-  def unmove! collision_line=nil
-    # line intersection
-    # return delta length
+  def unmove! collision_line
+    @x -= @xspeed * @speed
+    @y -= @yspeed * @speed
     @boundbox[:x] = @x
     @boundbox[:y] = @y
     return 0

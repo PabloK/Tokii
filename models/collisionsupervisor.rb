@@ -55,7 +55,7 @@ class CollisionSupervisor
   def ball_overlap ball1, ball2
     dx = ball1.x-ball2.x 
     dy = ball1.y-ball2.y
-    return [[0,0][-dy,dx]] if dx**2 + dy**2 < ball1.radii+ball2.radii
+    return [[0,0],[-dy,dx]] if Math.sqrt(dx**2+dy**2) < ball1.radii+ball2.radii
     return false
   end 
   
@@ -64,38 +64,34 @@ class CollisionSupervisor
       next unless box_overlap block.boundbox, ball.boundbox
       bounce_line = ball_block_collision ball, block
       next unless bounce_line
-      unmoved = ball.unmove! # Hur långt den har flyttat
+      motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
-      block.color=[255,block.color[1]-rand(10),0]
-      ball_controller! ball, unmoved if unmoved > 0.5 
+      ball_controller! ball, motion_left if motion_left > 0.1
     end
   end
 
-  def ball_collider! ball
-      for ball2 in @balls do
-        next if ball.object_id == ball2.object_id
-        next unless box_overlap ball2.boundbox, ball.boundbox
-        bounce_line = [[1,2],[2,1]]
-        next unless bounce_line
-        unmoved = ball.unmove! # Hur långt den har flyttat
-        ball.bounce! bounce_line
-        ball2.bounce! bounce_line
-        ball_controller! ball, unmoved if unmoved > 0.5 
-      end
-  end
+ def ball_collider! ball
+     for ball2 in @balls do
+       next if ball.object_id == ball2.object_id
+       next unless box_overlap ball2.boundbox, ball.boundbox
+       bounce_line = ball_overlap ball, ball2
+       next unless bounce_line
+       motion_left = ball.unmove! bounce_line
+       ball.bounce! bounce_line
+       ball2.bounce! bounce_line
+       ball_controller! ball, motion_left if motion_left > 0.1
+     end
+ end
   
-  def ball_controller! ball, unmove 
-      ball.move! unmove 
-      @limit -= 1
-      return 0 if @limit == 0
+  def ball_controller! ball, motion_left=ball.speed
+      ball.move! motion_left
       ball_blocks_collider! ball 
       ball_collider! ball
   end
 
   def collide!
     for ball in @balls do
-      @limit = 4
-      ball_controller! ball, 0
+      ball_controller! ball
     end
   end
   

@@ -34,9 +34,10 @@ class CollisionSupervisor
       d   = p1[0]*p2[1]-p2[0]*p1[1]
       disc = ball.radii**2 * dr - d**2
 
-      if disc >= 0 
+      if disc >= 0
         pmax = [[p1[0],p2[0]].max,[p1[1],p2[1]].max]
         pmin = [[p1[0],p2[0]].min,[p1[1],p2[1]].min]
+        #TODO these are to strict
         return false if -ball.radii > pmin[0] and ball.radii > pmax[0]
         return false if -ball.radii < pmin[0] and ball.radii < pmax[0]
         return false if -ball.radii > pmin[1] and ball.radii > pmax[1]
@@ -70,7 +71,7 @@ class CollisionSupervisor
       next unless bounce_line
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
-      ball_controller! ball, motion_left if motion_left > 0.1
+      ball_controller! ball, motion_left if motion_left > 0.5
       @renew = true if block.breakable
       @blocks.delete(block) if block.breakable
     end
@@ -85,11 +86,12 @@ class CollisionSupervisor
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
       ball2.bounce! bounce_line
-      ball_controller! ball, motion_left if motion_left > 0.1
+      ball_controller! ball, motion_left if motion_left > 0.3
     end
   end
 
-  def ball_controller! ball, motion_left=ball.speed
+  def ball_controller! ball, motion_left=nil
+    puts motion_left if motion_left
     ball.move! motion_left
     ball_blocks_collider! ball 
     ball_collider! ball

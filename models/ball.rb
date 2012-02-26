@@ -14,14 +14,15 @@ class Ball < GameObject
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @oldx = @x
     @oldy = @y
-    @speed = 6
+    @speed = 2
     height = width = radii*2 + 1
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @color
     @boundbox = {:x => @x,:y => @y,:width => @radii+3}
   end
 
-  def move! motion_left=@speed
+  def move! motion_left
+    motion_left = @speed unless motion_left
     @oldx = @x
     @oldy = @y
     @x += @xspeed * motion_left
@@ -31,19 +32,11 @@ class Ball < GameObject
   end
 
   def unmove! collision_line
-    dx  = @oldx - @x
-    dy  = @oldy - @y
-    dxl = collision_line[1][0] - collision_line[0][0]
-    dyl = collision_line[1][1] - collision_line[0][1]
-    k  = dy/dx
-    kl = dyl/dxl
-    m  = @oldy - k*@oldx 
-    ml = collision_line[0][1] -kl*collision_line[0][0]
-    @x = (ml-m)/(k-kl)
-    @y = k*@x+m
+    @x -= @speed*@xspeed
+    @y -= @speed*@yspeed
     @boundbox[:x] = @x
     @boundbox[:y] = @y
-    return @speed - Math.sqrt((@x-@oldx)**2+(@y-@oldy)**2)  
+    return 0
   end
   
   def bounce! collision_line

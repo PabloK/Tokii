@@ -32,20 +32,17 @@ class Block < GameObject
   end
   
   def cord pos 
-    cosr = cos(@rotation*0.0174532925)
-    sinr = sin(@rotation*0.0174532925)
+    cosr = cos(@rotation*PI/180)
+    sinr = sin(@rotation*PI/180)
     cwidth = @halfw * cosr
     cheight = @halfh * cosr 
     sheight = @halfh * sinr
     swidth = @halfw * sinr
-
     return [@x-cwidth, @y+swidth] if pos == :midw
     return [@x-sheight, @y-cheight] if pos == :midh
     return [@x-cwidth-sheight, @y+swidth-cheight] if pos == :tl
     return [@x+cwidth-sheight, @y-swidth-cheight] if pos == :tr
     return [@x-cwidth+sheight, @y+swidth+cheight] if pos == :bl
     return [@x+cwidth+sheight, @y-swidth+cheight] if pos == :br
-
   end
-  
 end

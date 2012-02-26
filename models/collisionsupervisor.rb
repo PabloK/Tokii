@@ -68,6 +68,7 @@ class CollisionSupervisor
       next unless bounce_line
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
+      block.color=[100,block.color[1]-1,100]
       ball_controller! ball, motion_left if motion_left > 0.1
     end
   end
@@ -81,6 +82,8 @@ class CollisionSupervisor
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
       ball2.bounce! bounce_line
+      ball2.color=[100,rand(255),100]
+      ball.color=[rand(255),100,100]
       ball_controller! ball, motion_left if motion_left > 0.1
     end
   end

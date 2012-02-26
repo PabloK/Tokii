@@ -9,19 +9,21 @@ class CollisionSupervisor
   end
   
   def ball_block_collision ball, block
-    block_side = [[:tr,:tl],[:br,:bl],[:tr,:br],[:tl,:bl]]
+    block_side = [[:tr,:tl],[:tr,:br],[:br,:bl],[:tl,:bl]]
 
-    #TODO improve collision detection with tail
     for line in block_side do
 
       p1 = block.cord line[0]
       p2 = block.cord line[1]
-      
-      # Corner bounce
-      # TODO return correct line on corner bounce
-      return [p1,p2] if (ball.x - p1[0]).abs < ball.radii and (ball.y - p1[1]).abs < ball.radii 
-      return [p1,p2] if (ball.x - p2[0]).abs < ball.radii and (ball.y - p2[1]).abs < ball.radii
+      return [p1,p2] if (ball.x - p1[0]).abs < ball.radii/2 and (ball.y - p1[1]).abs < ball.radii/2
+      return [p1,p2] if (ball.x - p2[0]).abs < ball.radii/2 and (ball.y - p2[1]).abs < ball.radii/2
 
+    end
+
+    for line in block_side do
+
+      p1 = block.cord line[0]
+      p2 = block.cord line[1]
 
       p1[0] -= ball.x
       p1[1] -= ball.y

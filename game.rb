@@ -12,7 +12,7 @@ class Game
   include Math
   def initialize
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 30
+    @clock.target_framerate = 60
     @queue = Rubygame::EventQueue.new
     @screen = Rubygame::Screen.new [1000,1000], 0 ,[Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @background = Background.new @screen.width, @screen.height

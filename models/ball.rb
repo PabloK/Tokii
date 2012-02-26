@@ -2,10 +2,10 @@ class Ball < GameObject
   
   @@show_box ||= false 
 
-  attr_reader :radii, :boundbox, :x, :y, :speed, :color, :color
+  attr_reader :radii, :boundbox, :x, :y, :speed, :color
 
   def initialize x, y, radii, xspeed=1.0, yspeed=1.0
-    @color = [200,200,255]
+    @color = [0,0,0]
     @radii = radii
     @center = [radii, radii]
     @x = x + radii 
@@ -14,7 +14,7 @@ class Ball < GameObject
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @oldx = @x
     @oldy = @y
-    @speed = 5 + rand(5)
+    @speed = 6
     height = width = radii*2 + 1
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @color

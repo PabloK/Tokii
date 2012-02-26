@@ -16,12 +16,15 @@ class Game
     @queue = Rubygame::EventQueue.new
     @screen = Rubygame::Screen.new [1000,1000], 0 ,[Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @background = Background.new @screen.width, @screen.height
+    @blockground = Background.new @screen.width, @screen.height
     @balls = []
     @blocks = []
+    @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
+    @renew = true
     
-    50.times {@balls << (Ball.new 250+rand(500), 250+rand(500), 3 + rand(7), rand(100)-100,rand(100)-100) }
+    100.times {@balls << (Ball.new 500+rand(50), 500+rand(30), 4, rand(100)-100,rand(100)-100) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background
   end
 
@@ -34,15 +37,21 @@ class Game
   end
 
   def update
-    @collisiondetector.collide!
+    @renew = @collisiondetector.collide!
     handle_events
   end
 
   def draw
-    @background.draw @screen
-    for block in @blocks do
-      block.draw @screen
+    if @renew
+      @background.redraw
+      for block in @blocks do
+        block.draw @background.surface
+      end
+      @renew = false
     end
+
+    @background.draw @screen
+
     for ball in @balls do
       ball.draw @screen
     end
@@ -60,45 +69,42 @@ class Game
   end
   
   def create_court
-    @blocks += hexagon_factory([@screen.width/2,@screen.width/2],Block,@screen.width,20)
+    @blocks += hexagon_factory([@screen.width/2,@screen.width/2],Block,@screen.width,20,[[30,50,50]])
   end
-  #move this? this is only a demo.version.
-  def create_breakables centre
+
+  def create_breakables centre, sym=[5,4,4,4]
     blocks=[]
-    for n in 1..5 do
-      blocks += hexsymetric_factoy([0,45*n],centre,Block,50,5)
-      blocks += hexsymetric_factoy([39,22.5+45*n],centre,Block,50,5)
+    for n in 1..sym[0] do
+      blocks += hexsymetric_factoy([0,45*n],centre,Block,50,4)
+      blocks += hexsymetric_factoy([39,22.5+45*n],centre,Block,50,4)
     end
-    for n in 2..5 do
-      blocks += hexsymetric_factoy([-39,22.5+45*n],centre,Block,50,5)
+    for n in 2..sym[1] do
+      blocks += hexsymetric_factoy([-39,22.5+45*n],centre,Block,50,4)
     end
-    for n in 3..5 do
-      blocks += hexsymetric_factoy([78,45*n],centre,Block,50,5)
+    for n in 3..sym[2] do
+      blocks += hexsymetric_factoy([78,45*n],centre,Block,50,4)
     end
-    for n in 4..5 do
-      blocks += hexsymetric_factoy([-78,45*n],centre,Block,50,5)
+    for n in 4..sym[3] do
+      blocks += hexsymetric_factoy([-78,45*n],centre,Block,50,4)
     end
     return blocks
   end
-  #move this some where else?
-  def hexagon_factory position, blocktype, width, thickness
+
+  def hexagon_factory position, blocktype, width, thickness,colors,breakable=false
     blocks=[]
     for n in 1..6 do
-      blocks << blocktype.new((width/2.5)*sin(2*PI*n/6)+position[0],(width/2.5)*cos(2*PI*n/6)+position[1], width/2.11, thickness, 60*(n-1) + 60)
+      color =  colors[rand(colors.length)]
+      blocks << blocktype.new((width/2.5)*sin(2*PI*n/6)+position[0],(width/2.5)*cos(2*PI*n/6)+position[1], width/2.11, thickness, 60*(n-1) + 60,color ,breakable)
     end
     return blocks
   end
-  #move this somwhere else?
+
   def hexsymetric_factoy position, centre, blocktype, width, thickness
     blocks=[]
     for n in 1..6 do 
       xpos=position[0]*cos(2*PI*n/6) - position[1]*sin(2*PI*n/6)+centre[0]
       ypos=position[0]*sin(2*PI*n/6) + position[1]*cos(2*PI*n/6)+centre[1]
-      blocks += hexagon_factory([xpos,ypos],blocktype,width,thickness)
-      for i in 0..5 do #TODO remove only to make better visuals for now
-        blocks[(n-1)*6+i].color=[rand(255),rand(255),rand(255)]
-        puts blocks[(n-1)*6+i].color
-      end
+      blocks += hexagon_factory([xpos,ypos],blocktype,width,thickness,@colors,true)
     end
     return blocks
   end

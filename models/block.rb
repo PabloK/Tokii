@@ -4,9 +4,9 @@ class Block < GameObject
   
   @@show_box ||= false 
 
-  attr_reader :x,:y,:width,:height,:boundbox, :rotation,:color
+  attr_reader :x,:y,:width,:height,:boundbox, :rotation,:color,:breakable
   
-  def initialize x, y, width, height, rotation=0, color=[30,35,50]
+  def initialize x, y, width, height, rotation=0, color=[30,35,50], breakable=false
     @height = height
     @width = width
     @x = x
@@ -19,6 +19,7 @@ class Block < GameObject
     @surface.fill @color
     @minbox = sqrt(@halfw**2 + @halfh**2)+0.1
     @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+1}
+    @breakable = breakable
   end
   
   def color= color

@@ -4,11 +4,13 @@ class CollisionSupervisor
     @balls = balls
     @blocks = blocks 
     @screen = screen
+    @collision_detected = false
   end
   
   def ball_block_collision ball, block
     block_side = [[:tr,:tl],[:br,:bl],[:tr,:br],[:tl,:bl]]
 
+    #TODO improve collision detection with tail
     for line in block_side do
 
       p1 = block.cord line[0]
@@ -19,7 +21,6 @@ class CollisionSupervisor
       return [p1,p2] if (ball.x - p2[0]).abs < ball.radii and (ball.y - p2[1]).abs < ball.radii
 
 
-      # Is ball intersecting the line between p1 and p2?
       p1[0] -= ball.x
       p1[1] -= ball.y
       p2[0] -= ball.x
@@ -32,7 +33,6 @@ class CollisionSupervisor
       disc = ball.radii**2 * dr - d**2
 
       if disc >= 0 
-        # if it is, is it between the points?
         pmax = [[p1[0],p2[0]].max,[p1[1],p2[1]].max]
         pmin = [[p1[0],p2[0]].min,[p1[1],p2[1]].min]
         return false if -ball.radii > pmin[0] and ball.radii > pmax[0]
@@ -67,9 +67,12 @@ class CollisionSupervisor
       bounce_line = ball_block_collision ball, block
       next unless bounce_line
       motion_left = ball.unmove! bounce_line
+      color = ball.color
+      ball.color= [color[0]+25,color[1]+10,color[2]+2]
       ball.bounce! bounce_line
-      block.color=[100,block.color[1]-1,100]
       ball_controller! ball, motion_left if motion_left > 0.1
+      @collision_detected = true if block.breakable
+      @blocks.delete(block) if block.breakable
     end
   end
 
@@ -82,8 +85,6 @@ class CollisionSupervisor
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
       ball2.bounce! bounce_line
-      ball2.color=[100,rand(255),100]
-      ball.color=[rand(255),100,100]
       ball_controller! ball, motion_left if motion_left > 0.1
     end
   end
@@ -93,8 +94,10 @@ class CollisionSupervisor
     ball_collider! ball
   end
   def collide!
+    @collision_detected = false
     for ball in @balls do
       ball_controller! ball
     end
+    return @collision_detected
   end
 end

@@ -6,7 +6,7 @@ class Block < GameObject
 
   attr_reader :x,:y,:width,:height,:boundbox, :rotation,:color,:breakable
   
-  def initialize x, y, width, height, rotation=0, color=[30,35,50], breakable=false
+  def initialize x, y, width, height, rotation=0, color=[40,40,40], breakable=false
     @height = height
     @width = width
     @x = x
@@ -18,7 +18,7 @@ class Block < GameObject
     @surface = Rubygame::Surface.new [width, height]
     @surface.fill @color
     @minbox = sqrt(@halfw**2 + @halfh**2)+0.1
-    @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+1}
+    @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+3}
     @breakable = breakable
   end
   

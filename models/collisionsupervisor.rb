@@ -1,10 +1,11 @@
 class CollisionSupervisor
   
+  attr_accessor :renew
   def initialize balls, blocks, screen
     @balls = balls
     @blocks = blocks 
     @screen = screen
-    @collision_detected = false
+    @renew = false
   end
   
   def ball_block_collision ball, block
@@ -17,6 +18,7 @@ class CollisionSupervisor
       p2 = block.cord line[1]
       
       # Corner bounce
+      # TODO return correct line on corner bounce
       return [p1,p2] if (ball.x - p1[0]).abs < ball.radii and (ball.y - p1[1]).abs < ball.radii 
       return [p1,p2] if (ball.x - p2[0]).abs < ball.radii and (ball.y - p2[1]).abs < ball.radii
 
@@ -67,11 +69,9 @@ class CollisionSupervisor
       bounce_line = ball_block_collision ball, block
       next unless bounce_line
       motion_left = ball.unmove! bounce_line
-      color = ball.color
-      ball.color= [color[0]+25,color[1]+10,color[2]+2]
       ball.bounce! bounce_line
       ball_controller! ball, motion_left if motion_left > 0.1
-      @collision_detected = true if block.breakable
+      @renew = true if block.breakable
       @blocks.delete(block) if block.breakable
     end
   end
@@ -88,16 +88,17 @@ class CollisionSupervisor
       ball_controller! ball, motion_left if motion_left > 0.1
     end
   end
+
   def ball_controller! ball, motion_left=ball.speed
     ball.move! motion_left
     ball_blocks_collider! ball 
     ball_collider! ball
   end
+
   def collide!
-    @collision_detected = false
+    @renew = false
     for ball in @balls do
       ball_controller! ball
     end
-    return @collision_detected
   end
 end

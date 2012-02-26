@@ -5,7 +5,7 @@ class Ball < GameObject
   attr_reader :radii, :boundbox, :x, :y, :speed, :color
 
   def initialize x, y, radii, xspeed=1.0, yspeed=1.0
-    @color = [0,0,0]
+    @color = [255,255,255]
     @radii = radii
     @center = [radii, radii]
     @x = x + radii 
@@ -18,7 +18,7 @@ class Ball < GameObject
     height = width = radii*2 + 1
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @color
-    @boundbox = {:x => @x,:y => @y,:width => @radii+2}
+    @boundbox = {:x => @x,:y => @y,:width => @radii+3}
   end
 
   def move! motion_left=@speed
@@ -31,11 +31,19 @@ class Ball < GameObject
   end
 
   def unmove! collision_line
-    @x -= @xspeed * @speed
-    @y -= @yspeed * @speed
+    dx  = @oldx - @x
+    dy  = @oldy - @y
+    dxl = collision_line[1][0] - collision_line[0][0]
+    dyl = collision_line[1][1] - collision_line[0][1]
+    k  = dy/dx
+    kl = dyl/dxl
+    m  = @oldy - k*@oldx 
+    ml = collision_line[0][1] -kl*collision_line[0][0]
+    @x = (ml-m)/(k-kl)
+    @y = k*@x+m
     @boundbox[:x] = @x
     @boundbox[:y] = @y
-    return 0
+    return @speed - Math.sqrt((@x-@oldx)**2+(@y-@oldy)**2)  
   end
   
   def bounce! collision_line

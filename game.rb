@@ -78,7 +78,7 @@ class Game
     @blocks += hexagon_factory([@screen.width/2,@screen.width/2],Block,@screen.width,20,[[40,40,40]])
   end
 
-  def create_breakables centre, sym=[7,3,3,3,3]
+  def create_breakables centre, sym=[6,2,3,1,3]
     blocks=[]
     for n in 1..sym[0] do
       blocks += hexsymetric_factoy([0,45*n],centre,Block,45,4)

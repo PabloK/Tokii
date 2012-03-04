@@ -20,9 +20,9 @@ class Game
     @balls = []
     @blocks = []
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
-    create_court
-    @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    6.times {@balls << (Ball.new 240 + rand(80), 240+rand(80), 4, rand(100)-100,rand(100)-100) }
+    #create_court
+    #@blocks += create_breakables [@screen.width/2,@screen.width/2]
+    1.times {@balls << (Ball.new 100 , 100, 4, 1,0) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background
     @first_frame = true
   end

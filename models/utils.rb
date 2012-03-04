@@ -1,7 +1,21 @@
 module Utils
+  include Math
 
-  def left_of_line? x, y, p1, p2
-   return  (p2[0]-p1[0])*(y-p1[1]) - (p2[1] - p1[1])*(x - p1[0]) > 0 
+  def rotate_point p, rot
+    rot = to_rad(rot)
+    return [p[0]*cos(rot) -p[1]*sin(rot) , p[0]*sin(rot) + p[1]*cos(rot)]
+  end
+  
+  def to_rad degree
+    return degree * Math::PI/180
+  end
+
+  def to_deg degree
+    return degree * 180/Math::PI
+  end
+
+  def rotate_line line, rot
+    return [rotate_point(line[0],rot),rotate_point(line[1],rot)]
   end
   
 end

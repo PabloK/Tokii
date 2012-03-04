@@ -1,5 +1,6 @@
+require './models/utils'
 class CollisionSupervisor
-  
+  include Utils 
   attr_accessor :renew
   def initialize balls, blocks, screen
     @balls = balls
@@ -8,47 +9,41 @@ class CollisionSupervisor
     @renew = false
   end
   
+  def find_zone point, corners
+    if point[1] < corners[:br][1] 
+      return :bl if point[0] <= corners[:bl][0]
+      return :br if point[0] >= corners[:br][0]
+      return :b  
+        
+    elsif point[1] < corners[:tr][1]
+      return :tl if point[0] <= corners[:tl][0]
+      return :tr if point[0] >= corners[:tr][0]
+      return :t 
+    
+    elsif point[1] > corners[:br][1]
+      return :ml if point[0] <= corners[:bl][0]
+      return :mr if point[0] >= corners[:br][0]
+      return :in
+    end
+    #TODO raise error
+  end
+
   def ball_block_collision ball, block
-    block_side = [[:tr,:tl],[:tr,:br],[:br,:bl],[:tl,:bl]]
-
-    for line in block_side do
-
-      p1 = block.cord line[0]
-      p2 = block.cord line[1]
-      return [p1,p2] if (ball.x - p1[0]).abs < ball.radii/2 and (ball.y - p1[1]).abs < ball.radii/2
-      return [p1,p2] if (ball.x - p2[0]).abs < ball.radii/2 and (ball.y - p2[1]).abs < ball.radii/2
-
-    end
-
-    for line in block_side do
-
-      p1 = block.cord line[0]
-      p2 = block.cord line[1]
-
-      p1[0] -= ball.x
-      p1[1] -= ball.y
-      p2[0] -= ball.x
-      p2[1] -= ball.y
-   
-      dx  = p1[0] - p2[0]
-      dy  = p1[1] - p2[1]
-      dr = dy**2 + dx**2
-      d   = p1[0]*p2[1]-p2[0]*p1[1]
-      disc = ball.radii**2 * dr - d**2
-
-      if disc >= 0
-        pmax = [[p1[0],p2[0]].max,[p1[1],p2[1]].max]
-        pmin = [[p1[0],p2[0]].min,[p1[1],p2[1]].min]
-        #TODO these are to strict
-        return false if -ball.radii > pmin[0] and ball.radii > pmax[0]
-        return false if -ball.radii < pmin[0] and ball.radii < pmax[0]
-        return false if -ball.radii > pmin[1] and ball.radii > pmax[1]
-        return false if -ball.radii < pmin[1] and ball.radii < pmax[1]
-        return [p1, p2]
-      end
-       
-    end
-
+    block_corners = [:tr,:br,:bl,:tl]
+    corners = {}
+    for point in block_corners do
+      corners[point] = rotate_point block.cord(point), block.rotation
+    end 
+    ball_point = rotate_point [ball.x, ball.y], block.rotation
+    puts(ball_point)
+    puts(corners)
+    zone = find_zone ball_point, corners
+    puts(zone)
+    # select lines and corners based on zone
+    # return the a line that is corner -1,-1 1,1 depending on corner
+    # return re-rotated line if the ball intersects line or the vecor ball-oldball intersect the line
+    collision = false
+    return rotate_line line, block.rotation if collision
     return false
   end
   

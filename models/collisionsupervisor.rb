@@ -10,7 +10,7 @@ class CollisionSupervisor
   end
   
   def find_zone point, corners
-    if point[1] < corners[:br][1] 
+    if point[1] > corners[:br][1] 
       return :bl if point[0] <= corners[:bl][0]
       return :br if point[0] >= corners[:br][0]
       return :b  
@@ -20,12 +20,19 @@ class CollisionSupervisor
       return :tr if point[0] >= corners[:tr][0]
       return :t 
     
-    elsif point[1] > corners[:br][1]
+    elsif point[1] < corners[:br][1]
       return :ml if point[0] <= corners[:bl][0]
       return :mr if point[0] >= corners[:br][0]
       return :in
     end
     #TODO raise error
+  end
+  
+  def select_lines zone
+    return [:tr,:tl] if zone == :t
+    return [:br,:bl] if zone == :b
+    return [:bl,:tl] if zone == :ml
+    return [:br,:tr] if zone == :mr
   end
 
   def ball_block_collision ball, block
@@ -34,16 +41,16 @@ class CollisionSupervisor
     for point in block_corners do
       corners[point] = rotate_point block.cord(point), block.rotation
     end 
+
+    ball_point = rotate_point [ball.oldx, ball.oldy], block.rotation
+    line = select_lines(find_zone(ball_point, corners))
+
     ball_point = rotate_point [ball.x, ball.y], block.rotation
-    puts(ball_point)
-    puts(corners)
-    zone = find_zone ball_point, corners
-    puts(zone)
-    # select lines and corners based on zone
-    # return the a line that is corner -1,-1 1,1 depending on corner
-    # return re-rotated line if the ball intersects line or the vecor ball-oldball intersect the line
-    collision = false
-    return rotate_line line, block.rotation if collision
+    if find_zone(ball_point, corners) == :in
+      real_line = rotate_line [corners[line[0]],corners[line[1]]], -block.rotation
+      return real_line 
+    end
+
     return false
   end
   

@@ -20,9 +20,9 @@ class Game
     @balls = []
     @blocks = []
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
-    #create_court
-    #@blocks += create_breakables [@screen.width/2,@screen.width/2]
-    1.times {@balls << (Ball.new 100 , 100, 4, 1,0) }
+    create_court
+    @blocks += create_breakables [@screen.width/2,@screen.width/2]
+    1.times {@balls << (Ball.new 250 , 250, 4, 2,3) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background
     @first_frame = true
   end
@@ -33,6 +33,7 @@ class Game
       update
       draw
       @clock.tick
+      #exit if @clock.lifetime > 1000
     end
   end
 
@@ -43,9 +44,9 @@ class Game
 
   def draw
     @background.draw @screen
-    if @collisiondetector.renew or @first_frame 
+    #if @collisiondetector.renew or @first_frame 
       draw_blocks
-    end
+    #end
     draw_balls
     @screen.flip
   end 

@@ -22,13 +22,12 @@ class Game
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    1.times {@balls << (Ball.new 250 , 250, 4, 2,3) }
+    40.times {@balls << (Ball.new 250 +rand(50), 250 + rand(50), 4, 2+rand(50),3) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background
     @first_frame = true
   end
 
   def run!
-    min = 50
     loop do 
       update
       draw

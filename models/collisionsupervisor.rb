@@ -33,6 +33,10 @@ class CollisionSupervisor
     return [:br,:bl] if zone == :b
     return [:bl,:tl] if zone == :ml
     return [:br,:tr] if zone == :mr
+    return [:tl,:tr] if zone == :tr
+    return [:tl,:tr] if zone == :tl
+    return [:br,:bl] if zone == :bl
+    return [:br,:bl] if zone == :br
   end
 
   def ball_block_collision ball, block

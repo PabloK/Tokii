@@ -20,15 +20,14 @@ class CollisionSupervisor
       return :tr if point[0] >= corners[:tr][0]
       return :t 
     
-    elsif point[1] < corners[:br][1]
+    else 
       return :ml if point[0] <= corners[:bl][0]
       return :mr if point[0] >= corners[:br][0]
       return :in
     end
-    #TODO raise error
   end
   
-  def select_lines zone
+  def select_line zone
     return [:tr,:tl] if zone == :t
     return [:br,:bl] if zone == :b
     return [:bl,:tl] if zone == :ml
@@ -47,13 +46,15 @@ class CollisionSupervisor
     end 
 
     ball_point = rotate_point [ball.oldx, ball.oldy], block.rotation
-    line = select_lines(find_zone(ball_point, corners))
-
+    line = select_line(find_zone(ball_point, corners))
     ball_point = rotate_point [ball.x, ball.y], block.rotation
+
     if find_zone(ball_point, corners) == :in
-      real_line = rotate_line [corners[line[0]],corners[line[1]]], -block.rotation
+      real_line = rotate_line [corners[line[0]], corners[line[1]]], -block.rotation
       return real_line 
     end
+
+    #TODO or if the discriminant is larger or equal to zero we return the line
 
     return false
   end
@@ -66,9 +67,9 @@ class CollisionSupervisor
   end
  
   def ball_overlap ball1, ball2
-    dx = ball1.x-ball2.x 
-    dy = ball1.y-ball2.y
-    return [[0,0],[-dy,dx]] if Math.sqrt(dx**2+dy**2) < ball1.radii+ball2.radii
+    dx = ball2.x - ball1.x 
+    dy = ball2.y - ball1.y
+    return [[0,0],[-dy,dx]] if Math.sqrt(dx**2 + dy**2) < ball1.radii+ball2.radii
     return false
   end 
   
@@ -79,7 +80,7 @@ class CollisionSupervisor
       next unless bounce_line
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
-      ball_controller! ball, motion_left if motion_left > 0.5
+      ball_controller! ball, motion_left if motion_left > 0.1
       @renew = true if block.breakable
       @blocks.delete(block) if block.breakable
     end
@@ -92,9 +93,9 @@ class CollisionSupervisor
       bounce_line = ball_overlap ball, ball2
       next unless bounce_line
       motion_left = ball.unmove! bounce_line
-      ball.bounce! bounce_line
       ball2.bounce! bounce_line
-      ball_controller! ball, motion_left if motion_left > 0.3
+      ball.bounce! bounce_line
+      ball_controller! ball, motion_left if motion_left > 0.1
     end
   end
 

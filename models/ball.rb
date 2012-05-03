@@ -2,7 +2,7 @@ class Ball < GameObject
   
   @@show_box ||= false 
 
-  attr_reader :radii, :boundbox, :x, :y, :speed, :color, :oldx, :oldy
+  attr_reader :radii, :boundbox, :x, :y, :speed, :color, :oldx, :oldy, :xspeed, :yspeed
 
   def initialize x, y, radii, xspeed=1.0, yspeed=1.0
     @color = [255,255,255]

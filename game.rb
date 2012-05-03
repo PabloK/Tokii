@@ -22,7 +22,7 @@ class Game
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    40.times {@balls << (Ball.new 250 +rand(50), 250 + rand(50), 4, 2+rand(50),3) }
+    1.times {@balls << (Ball.new 250 , 250 , 4, 2,3) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background
     @first_frame = true
   end
@@ -78,7 +78,7 @@ class Game
     @blocks += hexagon_factory([@screen.width/2,@screen.width/2],Block,@screen.width,20,[[40,40,40]])
   end
 
-  def create_breakables centre, sym=[6,2,3,1,3]
+  def create_breakables centre, sym=[5,5,5,2,2]
     blocks=[]
     for n in 1..sym[0] do
       blocks += hexsymetric_factoy([0,45*n],centre,Block,45,4)

@@ -1,10 +1,13 @@
 require './models/utils'
 class CollisionSupervisor
   include Utils 
-  def initialize balls, blocks, screen
+  attr_accessor :renew
+  def initialize balls, blocks, screen, paddle
     @balls = balls
+    @paddle = paddle
     @blocks = blocks 
     @screen = screen
+    @renew = false
   end
   
   def find_zone point, corners
@@ -83,8 +86,19 @@ class CollisionSupervisor
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
       ball_controller! ball, motion_left if motion_left > 0.1
+      @renew = true if block.breakable
       @blocks.delete(block) if block.breakable
-    end
+    end 
+  end
+
+  def ball_paddle_collider! ball
+      return unless box_overlap @paddle.boundbox, ball.boundbox
+      bounce_line = ball_block_collision ball, @paddle
+      return unless bounce_line
+      motion_left = ball.unmove! bounce_line
+      ball.bounce! bounce_line
+      ball_controller! ball, motion_left if motion_left > 0.1
+      ball.color = @paddle.color
   end
 
   def ball_collider! ball
@@ -109,10 +123,12 @@ class CollisionSupervisor
   def ball_controller! ball
     ball.move! 
     ball_blocks_collider! ball 
+    ball_paddle_collider! ball 
     ball_collider! ball
   end
 
   def collide! 
+    @renew = false
     for ball in @balls do
       ball_controller! ball
     end

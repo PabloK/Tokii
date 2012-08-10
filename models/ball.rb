@@ -3,6 +3,7 @@ class Ball < GameObject
   @@show_box ||= false 
 
   attr_reader :radii, :boundbox, :x, :y, :speed, :color, :oldx, :oldy, :xspeed, :yspeed
+  attr_accessor :color
 
   def initialize x, y, radii, xspeed=1.0, yspeed=1.0
     @color = [255,255,255]
@@ -12,7 +13,7 @@ class Ball < GameObject
     @y = y + radii 
     @xspeed = xspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
-    @speed = 3;
+    @speed = 4;
     @oldx = @x
     @oldy = @y
     height = width = radii*2 + 1

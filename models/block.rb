@@ -5,7 +5,7 @@ class Block < GameObject
   @@show_box ||= false 
 
   attr_reader :x,:y,:width,:height,:boundbox, :rotation,:color,:breakable
-  attr_accessor :rotation
+  attr_accessor :rotation, :color
   
   def initialize x, y, width, height, rotation=0, color=[40,40,40], breakable=false
     @height = height

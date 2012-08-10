@@ -20,14 +20,14 @@ class Game
     @background = Background.new @screen.width, @screen.height
     @blockground = Background.new @screen.width, @screen.height
     @balls = []
+    @pressed_keys = []
     @blocks = []
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    @paddle = Paddle.new(255, 255, 50, 10, 0,@colors[2],false)
-    @blocks << @paddle
-    10.times {@balls << (Ball.new rand(250)+250,rand(250)+250 , 4, 5,3) }
-    @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background
+    @paddle = Paddle.new(500, 110, 75, 15, 0,@colors[2],false)
+    30.times {@balls << (Ball.new rand(250)+250,rand(250)+250 , 4, rand(100)-50,rand(100)-50) }
+    @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background, @paddle
     @first_frame = true
   end
 
@@ -37,8 +37,8 @@ class Game
       handle_events
       draw
       resetmotion
+      @paddle.cooldown
       @clock.tick
-      #exit if @clock.lifetime > 1000
     end
   end
 
@@ -48,9 +48,10 @@ class Game
 
   def draw
     @background.draw @screen
-    #if @collisiondetector.renew or @first_frame 
+    @paddle.draw @screen
+    if @collisiondetector.renew or @first_frame
       draw_blocks
-    #end
+    end
     draw_balls
     @screen.flip
   end 
@@ -68,11 +69,21 @@ class Game
           Rubygame.quit
           exit
         when Rubygame::KeyDownEvent
-          if event.key == Rubygame::K_LEFT
-            @paddle.move_left 
-          elsif event.key == Rubygame::K_RIGHT
-            @paddle.move_right
-          end
+          @pressed_keys << event.key
+        when Rubygame::KeyUpEvent
+          @pressed_keys.delete_if {|key| key == event.key}
+      end
+    end    
+    # TODO loop trough array and execute actions
+    @pressed_keys.each do |key|
+      if key == Rubygame::K_LEFT
+        @paddle.move_left 
+      elsif key == Rubygame::K_RIGHT
+        @paddle.move_right
+      elsif key == Rubygame::K_DOWN
+        @paddle.teleport_down
+      elsif key == Rubygame::K_UP
+        @paddle.teleport_up
       end
     end
   end
@@ -95,7 +106,7 @@ class Game
     @blocks += hexagon_factory([@screen.width/2,@screen.width/2],Block,@screen.width,20,[[40,40,40]])
   end
 
-  def create_breakables centre, sym=[1,1,2,1,1]
+  def create_breakables centre, sym=[1,3,2,3,1]
     blocks=[]
     for n in 1..sym[0] do
       blocks += hexsymetric_factoy([0,45*n],centre,Block,45,4)

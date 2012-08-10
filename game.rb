@@ -5,14 +5,16 @@ require "rubygame"
 require "./models/gameobject"
 require "./models/background"
 require "./models/block"
+require "./models/paddle"
 require "./models/collisionsupervisor"
 require "./models/ball"
 
 class Game
   include Math
   def initialize
+    #TODO start threads that run thecollsion detection
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 60
+    @clock.target_framerate = 50
     @queue = Rubygame::EventQueue.new
     @screen = Rubygame::Screen.new [1000,1000], 0 ,[Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @background = Background.new @screen.width, @screen.height
@@ -22,7 +24,9 @@ class Game
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    1.times {@balls << (Ball.new 250 , 250 , 4, 2,3) }
+    @paddle = Paddle.new(255, 255, 50, 10, 0,@colors[2],false)
+    @blocks << @paddle
+    10.times {@balls << (Ball.new rand(250)+250,rand(250)+250 , 4, 5,3) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background
     @first_frame = true
   end
@@ -30,7 +34,9 @@ class Game
   def run!
     loop do 
       update
+      handle_events
       draw
+      resetmotion
       @clock.tick
       #exit if @clock.lifetime > 1000
     end
@@ -38,7 +44,6 @@ class Game
 
   def update
     @collisiondetector.collide!
-    handle_events
   end
 
   def draw
@@ -50,12 +55,24 @@ class Game
     @screen.flip
   end 
   
+  def resetmotion
+    @balls.each do |ball|
+      ball.resetmotion
+    end
+  end
+  
   def handle_events
     @queue.each do |event|
       case event 
         when Rubygame::QuitEvent
           Rubygame.quit
           exit
+        when Rubygame::KeyDownEvent
+          if event.key == Rubygame::K_LEFT
+            @paddle.move_left 
+          elsif event.key == Rubygame::K_RIGHT
+            @paddle.move_right
+          end
       end
     end
   end
@@ -78,7 +95,7 @@ class Game
     @blocks += hexagon_factory([@screen.width/2,@screen.width/2],Block,@screen.width,20,[[40,40,40]])
   end
 
-  def create_breakables centre, sym=[5,5,5,2,2]
+  def create_breakables centre, sym=[1,1,2,1,1]
     blocks=[]
     for n in 1..sym[0] do
       blocks += hexsymetric_factoy([0,45*n],centre,Block,45,4)

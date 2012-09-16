@@ -2,7 +2,7 @@ class Ball < GameObject
   
   @@show_box ||= false 
 
-  attr_reader :radii, :boundbox, :x, :y, :speed, :color, :oldx, :oldy, :xspeed, :yspeed
+  attr_reader :radii, :boundbox, :x, :y, :speed, :color, :oldx, :oldy, :xspeed, :yspeed, :player
   attr_accessor :color
 
   def initialize x, y, radii, xspeed=1.0, yspeed=1.0
@@ -36,10 +36,15 @@ class Ball < GameObject
     @boundbox[:y] = @y
   end
 
-  def unmove! collision_line
-    @motion = 0; #TODO calculate the motion left after removing
+  def unmove! bounce_line, isSimple=false
+    if isSimple
+      @x = bounce_line[0][0]
+      @y = bounce_line[0][1]
+      @motion = Math.sqrt((@oldx-@x)**2 + (@oldy-@y)**2)/@speed;
+    end
+    return @motion
   end
-  
+
   def resetmotion
     @motion = 1
   end
@@ -52,6 +57,12 @@ class Ball < GameObject
       yv = reflex_matrix[1][0]*@xspeed + reflex_matrix[1][1]*@yspeed
       @xspeed = xv/[xv.abs+yv.abs.to_f, 1.0].max
       @yspeed = yv/[xv.abs+yv.abs.to_f, 1.0].max
+  end
+
+  def player= player
+    @player = player
+    @color = player.color
+    @surface.draw_circle_s @center,radii, @color
   end
 
   def color= color

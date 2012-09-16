@@ -5,7 +5,7 @@ class Block < GameObject
   @@show_box ||= false 
 
   attr_reader :x,:y,:width,:height,:boundbox, :rotation,:color,:breakable
-  attr_accessor :rotation, :color
+  attr_accessor :rotation, :color, :powercolor, :scorepoints
   
   def initialize x, y, width, height, rotation=0, color=[40,40,40], breakable=false
     @height = height
@@ -21,11 +21,14 @@ class Block < GameObject
     @minbox = sqrt(@halfw**2 + @halfh**2)+0.1
     @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+3}
     @breakable = breakable
+    @scorepoints = 1
+    @powercolor = getpowercolor(@color)
   end
   
   def color= color
     @color = color
     @surface.fill @color
+    @powercolor = getpowercolor(@color)
   end
   
   def draw screen
@@ -47,4 +50,5 @@ class Block < GameObject
     return [@x-cwidth+sheight, @y+swidth+cheight] if pos == :bl
     return [@x+cwidth+sheight, @y-swidth+cheight] if pos == :br
   end
+  
 end

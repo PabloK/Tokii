@@ -66,16 +66,13 @@ class CollisionSupervisor
   end
   
   def box_overlap box1, box2
-    if box1[:width] + box2[:width] >= (box1[:y] - box2[:y]).abs
-      return box1[:width] + box2[:width] >= (box1[:x] - box2[:x]).abs 
-    end
-    return false
+    return (box1[:width] + box2[:width] > (box1[:x] - box2[:x]).abs) && (box1[:width] + box2[:width] > (box1[:y] - box2[:y]).abs)
   end
- 
+
   def ball_overlap ball1, ball2
-    dx = ball2.x - ball1.x 
+    dx = ball2.x - ball1.x
     dy = ball2.y - ball1.y
-    return Math.sqrt(dx**2 + dy**2) < ball1.radii+ball2.radii
+    return (dx**2 + dy**2) < (ball1.radii+ball2.radii)**2
   end 
   
   def ball_blocks_collider! ball
@@ -85,9 +82,12 @@ class CollisionSupervisor
       next unless bounce_line
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
-      ball_controller! ball, motion_left if motion_left > 0.1
+      if ball.player
+        ball.player.collide block
+      end
+      ball_controller! ball if motion_left > 0.1
       @renew = true if block.breakable
-      @blocks.delete(block) if block.breakable
+      @blocks.delete(block) if block.breakable and ball.player
     end 
   end
 
@@ -97,8 +97,8 @@ class CollisionSupervisor
       return unless bounce_line
       motion_left = ball.unmove! bounce_line
       ball.bounce! bounce_line
-      ball_controller! ball, motion_left if motion_left > 0.1
-      ball.color = @paddle.color
+      ball_controller! ball if motion_left > 0.1
+      ball.player = @paddle.player
   end
 
   def ball_collider! ball
@@ -106,17 +106,22 @@ class CollisionSupervisor
       next if ball.object_id == ball2.object_id
       next unless box_overlap ball2.boundbox, ball.boundbox
       next unless ball_overlap ball, ball2
-
-      dx = ball2.x - ball.x 
+      dx = ball2.x - ball.x
       dy = ball2.y - ball.y
-      bounce_line =  [[0,0],[-dy,dx]]
-
-      #TODO here we should realy calculate how much to move the ball backwards
-      #Then we should move each half of the way and remove it
-      ball.unmove! bounce_line
-      ball2.unmove! bounce_line
+      dist=Math.sqrt(dx**2 + dy**2)
+      bonuce_point_x = ball2.x - (ball.radii + ball2.radii) * dx / dist
+      bonuce_point_y = ball2.y - (ball.radii + ball2.radii) * dy / dist
+      
+      bounce_line =  [[bonuce_point_x,bonuce_point_y],[bonuce_point_x-dy,bonuce_point_y+dx]]
+      
       ball2.bounce! bounce_line
       ball.bounce! bounce_line
+      motion_left = ball.unmove! bounce_line, true #is a simple case we can use lower corner of vector
+      #either the other ball has moved it's entire movemnt and should not be unmoved
+      #or will move and has no momvent to unmove.
+      ball_controller! ball if motion_left > 0.1
+      
+      
     end
   end
 

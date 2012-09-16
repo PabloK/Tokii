@@ -1,8 +1,12 @@
 class Paddle < Block
 
   attr_accessor :color
-  def initialize *args
-    super(*args)
+  attr_reader :player
+  
+  def initialize player, x, y, width, height, rotation=0
+    super(x, y, width, height, rotation)
+    @player = player
+    @color = player.color
     @cooldown = 0
   end
 

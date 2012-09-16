@@ -8,6 +8,7 @@ require "./models/block"
 require "./models/paddle"
 require "./models/collisionsupervisor"
 require "./models/ball"
+require "./models/playerdata"
 
 class Game
   include Math
@@ -23,9 +24,11 @@ class Game
     @pressed_keys = []
     @blocks = []
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
+    @players = []
+    @players[0] = PlayerData.new('pl1', @colors[2])
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    @paddle = Paddle.new(500, 110, 75, 15, 0,@colors[2],false)
+    @paddle = Paddle.new(@players[0], 500, 110, 75, 15, 0)
     30.times {@balls << (Ball.new rand(250)+250,rand(250)+250 , 4, rand(100)-50,rand(100)-50) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background, @paddle
     @first_frame = true

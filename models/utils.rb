@@ -32,4 +32,16 @@ module Utils
     return chunks
   end
   
+      #TODO This is a place holder
+  def getpowercolor color
+    powercolor =:none
+    if color[0].to_i > 40 and color[1].to_i < 64 and color[2].to_i < 64
+      powercolor = :red
+    elsif color[0].to_i < 64 and color[1].to_i > 40 and color[2].to_i < 64
+      powercolor = :green
+    elsif color[0].to_i < 64 and color[1].to_i < 64 and color[2].to_i > 40
+      powercolor = :blue
+    end
+    return powercolor
+  end
 end

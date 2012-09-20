@@ -21,6 +21,9 @@ class Block < GameObject
     @minbox = sqrt(@halfw**2 + @halfh**2)+0.1
     @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+3}
     @breakable = breakable
+    @temp = @surface.rotozoom(@rotation,1,false)
+    @blitx = @x-@temp.width/2
+    @blity= @y-@temp.height/2
   end
   
   def color= color
@@ -29,8 +32,7 @@ class Block < GameObject
   end
   
   def draw screen
-    temp = @surface.rotozoom(@rotation,1,false)
-    temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
+    @temp.blit screen, [@blitx, @blity]
   end
   
   def cord pos 

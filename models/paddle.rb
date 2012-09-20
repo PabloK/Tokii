@@ -7,15 +7,21 @@ class Paddle < Block
   end
 
   def move_left
-    @x = @x - 3
+    @x = @x - 5
     @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+3}
     @x = 320 if @x < 320
+    @temp = @surface.rotozoom(@rotation,1,false)
+    @blitx = @x-@temp.width/2
+    @blity= @y-@temp.height/2
   end
   
   def move_right
-    @x = @x + 3
+    @x = @x + 5
     @x = 680 if @x > 680
     @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+3}
+    @temp = @surface.rotozoom(@rotation,1,false)
+    @blitx = @x-@temp.width/2
+    @blity= @y-@temp.height/2
   end
 
   def teleport_down
@@ -23,6 +29,9 @@ class Paddle < Block
       @x = 500
       @boundbox = {:x => @x,:y => @y, :width => sqrt(@width**2 + @height**2)/2+3}
       @cooldown = 150
+      @temp = @surface.rotozoom(@rotation,1,false)
+      @blitx = @x-@temp.width/2
+      @blity= @y-@temp.height/2
     end
   end
 

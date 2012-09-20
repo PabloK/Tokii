@@ -15,7 +15,7 @@ class Game
   def initialize
     #TODO start threads that run thecollsion detection
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 50
+    @clock.target_framerate = 60
     @queue = Rubygame::EventQueue.new
     @screen = Rubygame::Screen.new [1000,1000], 0 ,[Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @background = Background.new @screen.width, @screen.height

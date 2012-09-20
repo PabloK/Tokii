@@ -20,7 +20,7 @@ class Game
     @background = Background.new @screen.width, @screen.height
     @blockground = Background.new @screen.width, @screen.height
     @balls = []
-    @queue = []
+    @queue = Rubygame::EventQueue.new
     @pressed_keys = []
     @blocks = []
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]

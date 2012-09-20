@@ -13,14 +13,16 @@ class Ball < GameObject
     @y = y + radii 
     @xspeed = xspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
     @yspeed = yspeed/[xspeed.abs+yspeed.abs.to_f, 1.0].max
-    @speed = 4;
+    @speed = 3;
     @oldx = @x
     @oldy = @y
     height = width = radii*2 + 1
     @surface = Rubygame::Surface.new [width, height]
     @surface.draw_circle_s @center,radii, @color
     @boundbox = {:x => @x,:y => @y,:width => @radii+3}
-    @motion = 1;
+    @motion = 1
+    @blitpointx = @x -@radii 
+    @blitpointy = @y -@radii 
     #TODO Add a motion variable to the ball each ball is moved if it collides
     # it is unmoved and then moved the motion left untill all balls have 0 motion
     #motion is then reset upon entering a new frame
@@ -34,6 +36,8 @@ class Ball < GameObject
     @motion = 0;
     @boundbox[:x] = @x
     @boundbox[:y] = @y
+    @blitpointx = @x-@radii 
+    @blitpointy = @y-@radii 
   end
 
   def unmove! bounce_line, isSimple=false
@@ -71,7 +75,7 @@ class Ball < GameObject
   end
 
   def draw screen
-    @surface.blit screen, [@x-@radii, @y-@radii]
+    @surface.blit screen, [@blitpointx, @blitpointy]
   end
 
 end

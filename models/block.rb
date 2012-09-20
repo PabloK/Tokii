@@ -23,6 +23,9 @@ class Block < GameObject
     @breakable = breakable
     @scorepoints = 1
     @powercolor = getpowercolor(@color)
+    @temp = @surface.rotozoom(@rotation,1,false)
+    @blitx = @x-@temp.width/2
+    @blity= @y-@temp.height/2
   end
   
   def color= color
@@ -32,8 +35,7 @@ class Block < GameObject
   end
   
   def draw screen
-    temp = @surface.rotozoom(@rotation,1,false)
-    temp.blit screen, [@x-temp.width/2, @y-temp.height/2]
+    @temp.blit screen, [@blitx, @blity]
   end
   
   def cord pos 

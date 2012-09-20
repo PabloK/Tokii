@@ -2,9 +2,9 @@ require './models/utils'
 class CollisionSupervisor
   include Utils 
   attr_accessor :renew
-  def initialize balls, blocks, screen, paddle
+  def initialize balls, blocks, screen, paddles
     @balls = balls
-    @paddle = paddle
+    @paddles = paddles
     @blocks = blocks 
     @screen = screen
     @renew = false
@@ -92,13 +92,15 @@ class CollisionSupervisor
   end
 
   def ball_paddle_collider! ball
-      return unless box_overlap @paddle.boundbox, ball.boundbox
-      bounce_line = ball_block_collision ball, @paddle
-      return unless bounce_line
-      motion_left = ball.unmove! bounce_line
-      ball.bounce! bounce_line
-      ball_controller! ball if motion_left > 0.1
-      ball.player = @paddle.player
+      for paddle in @paddles do
+        next unless box_overlap paddle.boundbox, ball.boundbox
+        bounce_line = ball_block_collision ball, paddle
+        next unless bounce_line
+        motion_left = ball.unmove! bounce_line
+        ball.bounce! bounce_line
+        ball_controller! ball if motion_left > 0.1
+        ball.player = paddle.player
+      end
   end
 
   def ball_collider! ball

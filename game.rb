@@ -15,23 +15,26 @@ class Game
   def initialize
     #TODO start threads that run thecollsion detection
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 60
-    @queue = Rubygame::EventQueue.new
+    @clock.target_framerate = 75
     @screen = Rubygame::Screen.new [1000,1000], 0 ,[Rubygame::HWSURFACE,Rubygame::DOUBLEBUF]
     @background = Background.new @screen.width, @screen.height
     @blockground = Background.new @screen.width, @screen.height
     @balls = []
+    @queue = []
     @pressed_keys = []
     @blocks = []
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
     @players = []
     @players[0] = PlayerData.new('pl1', @colors[2])
+    @players[1] = PlayerData.new('pl2', @colors[3])
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    @paddle = Paddle.new(@players[0], 500, 110, 75, 15, 0)
-    30.times {@balls << (Ball.new rand(250)+250,rand(250)+250 , 4, rand(100)-50,rand(100)-50) }
-    @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background, @paddle
+    @paddles = [Paddle.new(@players[0],500, 110, 120, 15, 0,false)]
+    @paddles << Paddle.new(@players[1],500, 890, 120, 15, 0,false)
+    40.times {@balls << (Ball.new 750-rand(500),750-rand(500) , 3, 0,-1) }
+    @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background, @paddles
     @first_frame = true
+    @start = 0
   end
 
   def run!
@@ -40,8 +43,11 @@ class Game
       handle_events
       draw
       resetmotion
-      @paddle.cooldown
+      @paddles.each do |paddle|
+        paddle.cooldown
+      end
       @clock.tick
+      puts @clock.framerate
     end
   end
 
@@ -51,7 +57,7 @@ class Game
 
   def draw
     @background.draw @screen
-    @paddle.draw @screen
+    draw_paddles
     if @collisiondetector.renew or @first_frame
       draw_blocks
     end
@@ -62,6 +68,12 @@ class Game
   def resetmotion
     @balls.each do |ball|
       ball.resetmotion
+    end
+  end
+
+  def draw_paddles
+    @paddles.each do |paddle|
+      paddle.draw @screen
     end
   end
   
@@ -80,13 +92,18 @@ class Game
     # TODO loop trough array and execute actions
     @pressed_keys.each do |key|
       if key == Rubygame::K_LEFT
-        @paddle.move_left 
+        @paddles[0].move_left 
       elsif key == Rubygame::K_RIGHT
-        @paddle.move_right
+        @paddles[0].move_right
       elsif key == Rubygame::K_DOWN
-        @paddle.teleport_down
-      elsif key == Rubygame::K_UP
-        @paddle.teleport_up
+        @paddles[0].teleport_down
+      end
+      if key == Rubygame::K_A
+        @paddles[1].move_left 
+      elsif key == Rubygame::K_D
+        @paddles[1].move_right
+      elsif key == Rubygame::K_S
+        @paddles[1].teleport_down
       end
     end
   end
@@ -109,7 +126,7 @@ class Game
     @blocks += hexagon_factory([@screen.width/2,@screen.width/2],Block,@screen.width,20,[[40,40,40]])
   end
 
-  def create_breakables centre, sym=[1,3,2,3,1]
+  def create_breakables centre, sym=[rand(4),rand(4),rand(3),rand(4),rand(4)]
     blocks=[]
     for n in 1..sym[0] do
       blocks += hexsymetric_factoy([0,45*n],centre,Block,45,4)

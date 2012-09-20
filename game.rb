@@ -26,12 +26,12 @@ class Game
     @colors = [[00,255,56],[00,40,255],[255,174,0],[255,28,00],[224,00,255]]
     @players = []
     @players[0] = PlayerData.new('pl1', @colors[2])
-    @players[1] = PlayerData.new('pl2', @colors[3])
+    @players[1] = PlayerData.new('pl2', @colors[1])
     create_court
     @blocks += create_breakables [@screen.width/2,@screen.width/2]
-    @paddles = [Paddle.new(@players[0],500, 110, 120, 15, 0,false)]
-    @paddles << Paddle.new(@players[1],500, 890, 120, 15, 0,false)
-    40.times {@balls << (Ball.new 750-rand(500),750-rand(500) , 3, 0,-1) }
+    @paddles = [Paddle.new(@players[0],500, 110, 60, 15, 0,false)]
+    @paddles << Paddle.new(@players[1],500, 890, 60, 15, 0,false)
+    30.times {@balls << (Ball.new 750-rand(500),750-rand(500) , 3, 0,-1) }
     @collisiondetector = CollisionSupervisor.new @balls, @blocks, @background, @paddles
     @first_frame = true
     @start = 0
@@ -47,7 +47,6 @@ class Game
         paddle.cooldown
       end
       @clock.tick
-      puts @clock.framerate
     end
   end
 
